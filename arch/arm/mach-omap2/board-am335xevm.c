@@ -603,6 +603,27 @@ static struct pinmux_config mmc1_pin_mux[] = {
 	{NULL, 0},
 };
 
+// nmy add
+/* Module pin mux for uart2 */  
+// ´®¿Ú2
+static struct pinmux_config uart2_pin_mux[] = {
+	{"spi0_sclk.uart2_rxd", OMAP_MUX_MODE1 | AM33XX_PIN_INPUT_PULLUP},
+	{"spi0_d0.uart2_txd",  OMAP_MUX_MODE1 | AM33XX_PULL_ENBL},
+	{NULL, 0},
+};
+
+static struct pinmux_config uart4_pin_mux[] = {
+	{"mii1_txd3.uart4_rxd", OMAP_MUX_MODE3 | AM33XX_PIN_INPUT_PULLUP},
+	{"mii1_txd2.uart4_txd", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL},
+	{NULL, 0},
+};
+
+static struct pinmux_config uart5_pin_mux[] = {
+	{"mii1_col.uart5_rxd", OMAP_MUX_MODE3 | AM33XX_PIN_INPUT_PULLUP},
+	{"mii1_rx_dv.uart5_txd",OMAP_MUX_MODE3 | AM33XX_PULL_ENBL},
+	{NULL, 0},
+};
+
 /* Module pin mux for uart3 */  
 // ´®¿Ú3
 static struct pinmux_config uart3_pin_mux[] = {
@@ -984,6 +1005,9 @@ static void uart3_init(int evm_id, int profile)
 {
 	pr_info("lierda enter uart3_init function\n");	
 	setup_pin_mux(uart3_pin_mux);
+	setup_pin_mux(uart2_pin_mux);
+	setup_pin_mux(uart4_pin_mux);
+	setup_pin_mux(uart5_pin_mux);
 	return;
 }
 

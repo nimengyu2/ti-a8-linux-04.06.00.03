@@ -694,7 +694,8 @@ void __init omap_serial_init_port(struct omap_board_data *bdata)
 	u32 pdata_size = 0;
 	char *name;
 #ifndef CONFIG_SERIAL_OMAP
-	struct plat_serial8250_port ports[2] = {
+	//struct plat_serial8250_port ports[2] = {
+	struct plat_serial8250_port ports[6] = {
 		{},
 		{.flags = 0},
 	};
