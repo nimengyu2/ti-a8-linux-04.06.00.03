@@ -977,6 +977,7 @@ static void rgmii2_init(int evm_id, int profile)
 
 static void mii1_init(int evm_id, int profile)
 {
+	pr_info("lierda enter mii1_init function\n");	
 	setup_pin_mux(mii1_pin_mux);
 	return;
 }
@@ -1447,6 +1448,7 @@ static struct evm_dev_cfg gen_purp_evm_dev_cfg[] = {
 	{evm_nand_init, DEV_ON_BASEBOARD, PROFILE_NONE},
 	{uart1_wl12xx_init, DEV_ON_BASEBOARD, PROFILE_NONE},
 	{uart3_init, DEV_ON_BASEBOARD, PROFILE_NONE},
+	{mii1_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
 
 	// ‘≠∞Ê≥ı ºªØ≈‰÷√
 /*
