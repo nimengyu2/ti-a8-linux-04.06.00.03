@@ -168,6 +168,7 @@ static struct lcd_ctrl_config lcd_cfg = {
 	.fifo_th		= 6,
 };
 
+
 struct da8xx_lcdc_platform_data TFC_S9700RTWV35TR_01B_pdata = {
 	.manu_name		= "ThreeFive",
 	.controller_data	= &lcd_cfg,
@@ -949,7 +950,7 @@ static void lcdc_init(int evm_id, int profile)
 static void tsc_init(int evm_id, int profile)
 {
 	int err;
-
+#if 0
 	if (gp_evm_revision == GP_EVM_REV_IS_1_1A) {
 		am335x_touchscreen_data.analog_input = 1;
 		pr_info("TSC connected to beta GP EVM\n");
@@ -957,6 +958,10 @@ static void tsc_init(int evm_id, int profile)
 		am335x_touchscreen_data.analog_input = 0;
 		pr_info("TSC connected to alpha GP EVM\n");
 	}
+#endif
+	am335x_touchscreen_data.analog_input = 1;
+	pr_info("TSC connected to beta GP EVM\n");
+
 	setup_pin_mux(tsc_pin_mux);
 	err = platform_device_register(&tsc_device);
 	if (err)
@@ -990,12 +995,14 @@ static void rmii1_init(int evm_id, int profile)
 
 static void usb0_init(int evm_id, int profile)
 {
+	pr_info("lierda enter usb0_init function\n");		
 	setup_pin_mux(usb0_pin_mux);
 	return;
 }
 
 static void usb1_init(int evm_id, int profile)
 {
+	pr_info("lierda enter usb1_init function\n");		
 	setup_pin_mux(usb1_pin_mux);
 	return;
 }
@@ -1442,13 +1449,16 @@ static struct evm_dev_cfg low_cost_evm_dev_cfg[] = {
 
 /* General Purpose EVM */
 static struct evm_dev_cfg gen_purp_evm_dev_cfg[] = {
-	{mmc0_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
+	//{mmc0_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
 	{mmc0_no_cd_init,DEV_ON_BASEBOARD, PROFILE_NONE},
 	{lcdc_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
 	{evm_nand_init, DEV_ON_BASEBOARD, PROFILE_NONE},
 	{uart1_wl12xx_init, DEV_ON_BASEBOARD, PROFILE_NONE},
 	{uart3_init, DEV_ON_BASEBOARD, PROFILE_NONE},
 	{mii1_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
+	{usb0_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
+	{usb1_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
+	{tsc_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
 
 	// ‘≠∞Ê≥ı ºªØ≈‰÷√
 /*
@@ -1814,13 +1824,13 @@ static struct i2c_board_info __initdata am335x_i2c_boardinfo[] = {
 		/* Baseboard board EEPROM */
 		I2C_BOARD_INFO("24c256", BASEBOARD_I2C_ADDR),
 		.platform_data  = &am335x_baseboard_eeprom_info,
-	},
+	},/*
 	{
 		I2C_BOARD_INFO("cpld_reg", 0x35),
 	},
 	{
 		I2C_BOARD_INFO("tlc59108", 0x40),
-	},
+	},*/
 	{
 		I2C_BOARD_INFO("tps65910", TPS65910_I2C_ID1),
 		.platform_data  = &am335x_tps65910_info,
