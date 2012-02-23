@@ -21,6 +21,8 @@
  *   o Add more codecs and platforms to ensure good API coverage.
  *   o Support TDM on PCM and I2S
  */
+//#define M_NMY_DEBUG_AUDIO   1
+#undef M_NMY_DEBUG_AUDIO
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -30,7 +32,9 @@
 #include <linux/bitops.h>
 #include <linux/debugfs.h>
 // nmy add
+#ifdef M_NMY_DEBUG_AUDIO
 #define DEBUG    1 
+#endif
 #include <linux/platform_device.h>
 #include <linux/ctype.h>
 #include <linux/slab.h>
