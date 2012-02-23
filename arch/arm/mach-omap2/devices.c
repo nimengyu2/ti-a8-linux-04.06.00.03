@@ -213,6 +213,44 @@ void __init am335x_register_mcasp1(struct snd_platform_data *pdata)
 	platform_device_register(&am335x_mcasp1_device);
 }
 
+// nmy add
+static struct resource am335x_mcasp0_resource[] = {
+	{
+		.name = "mcasp0",
+		.start = AM33XX_ASP0_BASE,
+		.end = AM33XX_ASP0_BASE + (SZ_1K * 12) - 1,
+		.flags = IORESOURCE_MEM,
+	},
+	/* TX event */
+	{
+		.start = AM33XX_DMA_MCASP0_X,
+		.end = AM33XX_DMA_MCASP0_X,
+		.flags = IORESOURCE_DMA,
+	},
+	/* RX event */
+	{
+		.start = AM33XX_DMA_MCASP0_R,
+		.end = AM33XX_DMA_MCASP0_R,
+		.flags = IORESOURCE_DMA,
+	},
+};
+
+static struct platform_device am335x_mcasp0_device = {
+	.name = "davinci-mcasp",
+	//.id = 1,
+	.id = 0,
+	.num_resources = ARRAY_SIZE(am335x_mcasp0_resource),
+	.resource = am335x_mcasp0_resource,
+};
+
+void __init am335x_register_mcasp0(struct snd_platform_data *pdata)
+{
+	am335x_mcasp0_device.dev.platform_data = pdata;
+	platform_device_register(&am335x_mcasp0_device);
+	pr_info("lierda:enter in am335x_register_mcasp0  function.\n");
+}
+
+
 #else
 void __init am335x_register_mcasp1(struct snd_platform_data *pdata) {}
 #endif
@@ -226,6 +264,7 @@ struct platform_device am33xx_pcm_device = {
 static void am33xx_init_pcm(void)
 {
 	platform_device_register(&am33xx_pcm_device);
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);	
 }
 
 #else
@@ -1115,6 +1154,7 @@ static int __init omap2_init_devices(void)
 	omap_init_vout();
 	am33xx_register_edma();
 	am33xx_init_pcm();
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);	
 #if defined (CONFIG_SOC_OMAPAM33XX)
 	am335x_register_pruss_uio(&am335x_pruss_uio_pdata);
 #endif

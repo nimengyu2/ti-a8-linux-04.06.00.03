@@ -545,7 +545,7 @@ static int davinci_config_channel_size(struct davinci_audio_dev *dev,
 {
 	u32 fmt = 0;
 	u32 mask, rotate;
-
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	switch (channel_size) {
 	case DAVINCI_AUDIO_WORD_8:
 		fmt = 0x03;
@@ -612,7 +612,7 @@ static void davinci_hw_common_param(struct davinci_audio_dev *dev, int stream)
 	int i;
 	u8 tx_ser = 0;
 	u8 rx_ser = 0;
-
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	/* Default configuration */
 	mcasp_set_bits(dev->base + DAVINCI_MCASP_PWREMUMGT_REG, MCASP_SOFT);
 
@@ -684,7 +684,7 @@ static void davinci_hw_param(struct davinci_audio_dev *dev, int stream)
 {
 	int i, active_slots;
 	u32 mask = 0;
-
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	active_slots = (dev->tdm_slots > 31) ? 32 : dev->tdm_slots;
 	for (i = 0; i < active_slots; i++)
 		mask |= (1 << i);
@@ -729,6 +729,7 @@ static void davinci_hw_param(struct davinci_audio_dev *dev, int stream)
 /* S/PDIF */
 static void davinci_hw_dit_param(struct davinci_audio_dev *dev)
 {
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);	
 	/* Set the PDIR for Serialiser as output */
 	mcasp_set_bits(dev->base + DAVINCI_MCASP_PDIR_REG, AFSX);
 
@@ -769,6 +770,7 @@ static int davinci_mcasp_hw_params(struct snd_pcm_substream *substream,
 					&dev->dma_params[substream->stream];
 	int word_length;
 	u8 fifo_level;
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	davinci_hw_common_param(dev, substream->stream);
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
@@ -818,7 +820,7 @@ static int davinci_mcasp_trigger(struct snd_pcm_substream *substream,
 {
 	struct davinci_audio_dev *dev = snd_soc_dai_get_drvdata(cpu_dai);
 	int ret = 0;
-
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_RESUME:
 	case SNDRV_PCM_TRIGGER_START:
@@ -855,7 +857,7 @@ static int davinci_mcasp_startup(struct snd_pcm_substream *substream,
 				 struct snd_soc_dai *dai)
 {
 	struct davinci_audio_dev *dev = snd_soc_dai_get_drvdata(dai);
-
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	snd_soc_dai_set_dma_data(dai, substream, dev->dma_params);
 	return 0;
 }
@@ -911,9 +913,11 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
 	struct davinci_audio_dev *dev;
 	int ret = 0;
 
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	dev = kzalloc(sizeof(struct davinci_audio_dev), GFP_KERNEL);
 	if (!dev)
 		return	-ENOMEM;
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!mem) {
@@ -921,6 +925,7 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
 		ret = -ENODEV;
 		goto err_release_data;
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	ioarea = request_mem_region(mem->start,
 			resource_size(mem), pdev->name);
@@ -929,6 +934,7 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
 		ret = -EBUSY;
 		goto err_release_data;
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	pdata = pdev->dev.platform_data;
 	dev->clk = clk_get(&pdev->dev, NULL);
@@ -936,6 +942,7 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
 		ret = -ENODEV;
 		goto err_release_region;
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	clk_enable(dev->clk);
 	dev->clk_active = 1;
@@ -946,7 +953,8 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
 		ret = -ENOMEM;
 		goto err_release_clk;
 	}
-
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
+	
 	dev->op_mode = pdata->op_mode;
 	dev->tdm_slots = pdata->tdm_slots;
 	dev->num_serializer = pdata->num_serializer;
@@ -973,6 +981,7 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
 		ret = -ENODEV;
 		goto err_iounmap;
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	dma_data->channel = res->start;
 
@@ -992,6 +1001,7 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
 		ret = -ENODEV;
 		goto err_iounmap;
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	dma_data->channel = res->start;
 	dev_set_drvdata(&pdev->dev, dev);
@@ -999,8 +1009,10 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
 
 	if (ret != 0)
 		goto err_iounmap;
-	return 0;
 
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
+	return 0;
+	
 err_iounmap:
 	iounmap(dev->base);
 err_release_clk:
@@ -1010,7 +1022,7 @@ err_release_region:
 	release_mem_region(mem->start, resource_size(mem));
 err_release_data:
 	kfree(dev);
-
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return ret;
 }
 
@@ -1019,6 +1031,7 @@ static int davinci_mcasp_remove(struct platform_device *pdev)
 	struct davinci_audio_dev *dev = dev_get_drvdata(&pdev->dev);
 	struct resource *mem;
 
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	snd_soc_unregister_dai(&pdev->dev);
 	clk_disable(dev->clk);
 	clk_put(dev->clk);
@@ -1043,12 +1056,14 @@ static struct platform_driver davinci_mcasp_driver = {
 
 static int __init davinci_mcasp_init(void)
 {
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);	
 	return platform_driver_register(&davinci_mcasp_driver);
 }
 module_init(davinci_mcasp_init);
 
 static void __exit davinci_mcasp_exit(void)
 {
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	platform_driver_unregister(&davinci_mcasp_driver);
 }
 module_exit(davinci_mcasp_exit);

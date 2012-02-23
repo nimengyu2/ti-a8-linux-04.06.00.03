@@ -29,6 +29,8 @@
 #include <linux/pm.h>
 #include <linux/bitops.h>
 #include <linux/debugfs.h>
+// nmy add
+#define DEBUG    1 
 #include <linux/platform_device.h>
 #include <linux/ctype.h>
 #include <linux/slab.h>
@@ -3239,10 +3241,12 @@ int snd_soc_register_codec(struct device *dev,
 	int ret, i;
 
 	dev_dbg(dev, "codec register %s\n", dev_name(dev));
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	codec = kzalloc(sizeof(struct snd_soc_codec), GFP_KERNEL);
 	if (codec == NULL)
 		return -ENOMEM;
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	/* create CODEC component name */
 	codec->name = fmt_single_name(dev, &codec->id);
@@ -3250,6 +3254,7 @@ int snd_soc_register_codec(struct device *dev,
 		kfree(codec);
 		return -ENOMEM;
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (codec_drv->compress_type)
 		codec->compress_type = codec_drv->compress_type;
@@ -3289,6 +3294,7 @@ int snd_soc_register_codec(struct device *dev,
 			}
 		}
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (codec_drv->reg_access_size && codec_drv->reg_access_default) {
 		if (!codec->volatile_register)
@@ -3310,6 +3316,7 @@ int snd_soc_register_codec(struct device *dev,
 		if (ret < 0)
 			goto fail;
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	mutex_lock(&client_mutex);
 	list_add(&codec->list, &codec_list);
@@ -3317,6 +3324,7 @@ int snd_soc_register_codec(struct device *dev,
 	mutex_unlock(&client_mutex);
 
 	pr_debug("Registered codec '%s'\n", codec->name);
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return 0;
 
 fail:
@@ -3324,6 +3332,7 @@ fail:
 	codec->reg_def_copy = NULL;
 	kfree(codec->name);
 	kfree(codec);
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return ret;
 }
 EXPORT_SYMBOL_GPL(snd_soc_register_codec);

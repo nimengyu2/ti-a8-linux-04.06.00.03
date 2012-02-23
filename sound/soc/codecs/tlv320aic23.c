@@ -701,22 +701,23 @@ static int tlv320aic23_codec_probe(struct i2c_client *i2c,
 {
 	struct aic23 *aic23;
 	int ret;
-
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	if (!i2c_check_functionality(i2c->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EINVAL;
-
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	aic23 = kzalloc(sizeof(struct aic23), GFP_KERNEL);
 	if (aic23 == NULL)
 		return -ENOMEM;
-
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	i2c_set_clientdata(i2c, aic23);
 	aic23->control_data = i2c;
 	aic23->control_type = SND_SOC_I2C;
-
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	ret =  snd_soc_register_codec(&i2c->dev,
 			&soc_codec_dev_tlv320aic23, &tlv320aic23_dai, 1);
 	if (ret < 0)
 		kfree(aic23);
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return ret;
 }
 static int __exit tlv320aic23_i2c_remove(struct i2c_client *i2c)
@@ -748,11 +749,13 @@ static int __init tlv320aic23_modinit(void)
 {
 	int ret;
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	ret = i2c_add_driver(&tlv320aic23_i2c_driver);
 	if (ret != 0) {
 		printk(KERN_ERR "Failed to register TLV320AIC23 I2C driver: %d\n",
 		       ret);
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 #endif
 	return ret;
 }
@@ -761,6 +764,7 @@ module_init(tlv320aic23_modinit);
 static void __exit tlv320aic23_exit(void)
 {
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	i2c_del_driver(&tlv320aic23_i2c_driver);
 #endif
 }

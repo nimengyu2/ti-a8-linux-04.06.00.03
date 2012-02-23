@@ -1289,7 +1289,7 @@ static int aic3x_init(struct snd_soc_codec *codec)
 {
 	struct aic3x_priv *aic3x = snd_soc_codec_get_drvdata(codec);
 	int reg;
-
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	snd_soc_write(codec, AIC3X_PAGE_SELECT, PAGE0_SELECT);
 	snd_soc_write(codec, AIC3X_RESET, SOFT_RESET);
 
@@ -1382,6 +1382,7 @@ static int aic3x_probe(struct snd_soc_codec *codec)
 	struct aic3x_priv *aic3x = snd_soc_codec_get_drvdata(codec);
 	int ret, i;
 
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	INIT_LIST_HEAD(&aic3x->list);
 	codec->control_data = aic3x->control_data;
 	aic3x->codec = codec;
@@ -1392,6 +1393,7 @@ static int aic3x_probe(struct snd_soc_codec *codec)
 		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
 		return ret;
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (gpio_is_valid(aic3x->gpio_reset) &&
 	    !aic3x_is_shared_reset(aic3x)) {
@@ -1400,6 +1402,7 @@ static int aic3x_probe(struct snd_soc_codec *codec)
 			goto err_gpio;
 		gpio_direction_output(aic3x->gpio_reset, 0);
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	for (i = 0; i < ARRAY_SIZE(aic3x->supplies); i++)
 		aic3x->supplies[i].supply = aic3x_supply_names[i];
@@ -1410,6 +1413,7 @@ static int aic3x_probe(struct snd_soc_codec *codec)
 		dev_err(codec->dev, "Failed to request supplies: %d\n", ret);
 		goto err_get;
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	for (i = 0; i < ARRAY_SIZE(aic3x->supplies); i++) {
 		aic3x->disable_nb[i].nb.notifier_call = aic3x_regulator_event;
 		aic3x->disable_nb[i].aic3x = aic3x;
@@ -1422,6 +1426,7 @@ static int aic3x_probe(struct snd_soc_codec *codec)
 			goto err_notif;
 		}
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	codec->cache_only = 1;
 	aic3x_init(codec);
@@ -1442,6 +1447,7 @@ static int aic3x_probe(struct snd_soc_codec *codec)
 	aic3x_add_widgets(codec);
 	list_add(&aic3x->list, &reset_list);
 
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return 0;
 
 err_notif:
@@ -1454,6 +1460,7 @@ err_get:
 	    !aic3x_is_shared_reset(aic3x))
 		gpio_free(aic3x->gpio_reset);
 err_gpio:
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return ret;
 }
 
@@ -1513,12 +1520,14 @@ static int aic3x_i2c_probe(struct i2c_client *i2c,
 	struct aic3x_priv *aic3x;
 	int ret;
 	const struct i2c_device_id *tbl;
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	aic3x = kzalloc(sizeof(struct aic3x_priv), GFP_KERNEL);
 	if (aic3x == NULL) {
 		dev_err(&i2c->dev, "failed to create private data\n");
 		return -ENOMEM;
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	aic3x->control_data = i2c;
 	aic3x->control_type = SND_SOC_I2C;
@@ -1530,22 +1539,27 @@ static int aic3x_i2c_probe(struct i2c_client *i2c,
 	} else {
 		aic3x->gpio_reset = -1;
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	for (tbl = aic3x_i2c_id; tbl->name[0]; tbl++) {
 		if (!strcmp(tbl->name, id->name))
 			break;
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	aic3x->model = tbl - aic3x_i2c_id;
 
 	ret = snd_soc_register_codec(&i2c->dev,
 			&soc_codec_dev_aic3x, &aic3x_dai, 1);
 	if (ret < 0)
 		kfree(aic3x);
+	printk("lierda:enter file=%s function=%s line=%d,ret=%d\n",__FILE__,__FUNCTION__,__LINE__,ret);	
+	
 	return ret;
 }
 
 static int aic3x_i2c_remove(struct i2c_client *client)
 {
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);	
 	snd_soc_unregister_codec(&client->dev);
 	kfree(i2c_get_clientdata(client));
 	return 0;
@@ -1567,11 +1581,13 @@ static int __init aic3x_modinit(void)
 {
 	int ret = 0;
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	ret = i2c_add_driver(&aic3x_i2c_driver);
 	if (ret != 0) {
 		printk(KERN_ERR "Failed to register TLV320AIC3x I2C driver: %d\n",
 		       ret);
 	}
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 #endif
 	return ret;
 }
@@ -1580,6 +1596,7 @@ module_init(aic3x_modinit);
 static void __exit aic3x_exit(void)
 {
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
 	i2c_del_driver(&aic3x_i2c_driver);
 #endif
 }
