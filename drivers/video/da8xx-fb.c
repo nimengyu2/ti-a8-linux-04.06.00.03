@@ -274,15 +274,16 @@ static struct da8xx_panel known_lcd_panels[] = {
 	/* ThreeFive S9700RTWV35TR */
 	[2] = {
 		.name = "TFC_S9700RTWV35TR_01B",
-		.width = 800,
-		.height = 480,
+		.width = 1024,
+		.height = 768,
 		.hfp = 210,
 		.hbp = 6,
 		.hsw = 40,
 		.vfp = 22,
 		.vbp = 3,
 		.vsw = 20,
-		.pxl_clk = 800*480*60,
+		//.pxl_clk = 800*480*60,
+		.pxl_clk = (1024+210+46)*(768+45)*60,
 		.invert_pxl_clk = 0,
 	},
 #endif
