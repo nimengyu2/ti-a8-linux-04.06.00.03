@@ -1197,6 +1197,8 @@ static struct cpsw_platform_data am33xx_cpsw_pdata = {
 	.host_port_num		= 0,
 	.no_bd_ram		= false,
 	.version		= CPSW_VERSION_2,
+	// nmy add
+	//.rmii_en 		= 1, 
 };
 
 static struct mdio_platform_data am33xx_cpsw_mdiopdata = {
