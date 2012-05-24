@@ -59,6 +59,8 @@ static struct omap_hwmod am33xx_gpio2_hwmod;
 static struct omap_hwmod am33xx_gpio3_hwmod;
 static struct omap_hwmod am33xx_i2c1_hwmod;
 static struct omap_hwmod am33xx_i2c2_hwmod;
+// nmy add
+static struct omap_hwmod am33xx_i2c3_hwmod;
 static struct omap_hwmod am33xx_usbss_hwmod;
 static struct omap_hwmod am33xx_mmc0_hwmod;
 static struct omap_hwmod am33xx_mmc1_hwmod;
@@ -869,6 +871,61 @@ static struct omap_hwmod am33xx_i2c2_hwmod = {
 	.slaves_cnt	= ARRAY_SIZE(am33xx_i2c2_slaves),
 	.class		= &i2c_class,
 };
+
+
+// nmy add
+/* i2c3 */
+/* l4 per -> i2c3 */
+static struct omap_hwmod_addr_space am33xx_i2c3_addr_space[] = {
+	{
+		.pa_start	= AM33XX_I2C2_BASE,
+		.pa_end		= AM33XX_I2C2_BASE + SZ_4K - 1,
+		.flags		= ADDR_TYPE_RT
+	},
+	{ }
+};
+
+static struct omap_hwmod_ocp_if am335_l4_per_i2c3 = {
+	.master		= &am33xx_l4per_hwmod,
+	.slave		= &am33xx_i2c3_hwmod,
+	.addr		= am33xx_i2c3_addr_space,
+	.user		= OCP_USER_MPU,
+};
+
+static struct omap_hwmod_irq_info i2c3_mpu_irqs[] = {
+	{ .irq = AM33XX_IRQ_MSHSI2COCP2 },
+	{ .irq = -1 }
+};
+
+static struct omap_hwmod_dma_info i2c3_edma_reqs[] = {
+	{ .name = "tx", .dma_req = 0, },
+	{ .name = "rx", .dma_req = 0, },
+	{ .dma_req = -1 }
+};
+
+static struct omap_hwmod_ocp_if *am33xx_i2c3_slaves[] = {
+	&am335_l4_per_i2c3,
+};
+
+static struct omap_hwmod am33xx_i2c3_hwmod = {
+	.name		= "i2c3",
+	.mpu_irqs	= i2c3_mpu_irqs,
+	.sdma_reqs	= i2c3_edma_reqs,
+	.main_clk	= "i2c3_fck",
+	.clkdm_name	= "l4ls_clkdm",
+	.prcm		= {
+		.omap4 = {
+			.clkctrl_offs	= AM33XX_CM_PER_I2C2_CLKCTRL_OFFSET,
+			.modulemode	= MODULEMODE_SWCTRL,
+		},
+	},
+	.flags		= HWMOD_16BIT_REG,
+	.dev_attr	= &i2c_dev_attr,
+	.slaves		= am33xx_i2c3_slaves,
+	.slaves_cnt	= ARRAY_SIZE(am33xx_i2c3_slaves),
+	.class		= &i2c_class,
+};
+
 
 /* 'icss' class */
 static struct omap_hwmod_class am33xx_icss_hwmod_class = {
@@ -2520,6 +2577,8 @@ static __initdata struct omap_hwmod *am33xx_hwmods[] = {
 	/* i2c class */
 	&am33xx_i2c1_hwmod,
 	&am33xx_i2c2_hwmod,
+	// nmy add
+	&am33xx_i2c3_hwmod,
 	/* icss class */
 	&am33xx_icss_hwmod,
 	/* ieee5000 class */

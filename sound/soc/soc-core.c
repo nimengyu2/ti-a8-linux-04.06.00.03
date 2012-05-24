@@ -45,6 +45,7 @@
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
 #include <sound/initval.h>
+#include <linux/lierda_debug.h>
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/asoc.h>
@@ -3166,6 +3167,7 @@ int snd_soc_register_platform(struct device *dev,
 	mutex_unlock(&client_mutex);
 
 	pr_debug("Registered platform '%s'\n", platform->name);
+	lsd_audio_dbg(LSD_OK,"Registered platform '%s'\n", platform->name);
 
 	return 0;
 }
@@ -3192,6 +3194,7 @@ found:
 	mutex_unlock(&client_mutex);
 
 	pr_debug("Unregistered platform '%s'\n", platform->name);
+	lsd_audio_dbg(LSD_ERR,"Unregistered platform '%s'\n", platform->name);
 	kfree(platform->name);
 	kfree(platform);
 }
@@ -3245,20 +3248,30 @@ int snd_soc_register_codec(struct device *dev,
 	int ret, i;
 
 	dev_dbg(dev, "codec register %s\n", dev_name(dev));
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
+	lsd_audio_dbg(LSD_DBG, "codec register %s\n", dev_name(dev));
 
 	codec = kzalloc(sizeof(struct snd_soc_codec), GFP_KERNEL);
 	if (codec == NULL)
+	{
 		return -ENOMEM;
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-
+		lsd_audio_dbg(LSD_ERR, "kzalloc error \n");
+	}
+	else
+	{
+		lsd_audio_dbg(LSD_OK, "kzalloc ok \n");
+	}	
+	
 	/* create CODEC component name */
 	codec->name = fmt_single_name(dev, &codec->id);
 	if (codec->name == NULL) {
+		lsd_audio_dbg(LSD_ERR, "kzalloc error \n");
 		kfree(codec);
 		return -ENOMEM;
 	}
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
+	else
+	{
+		lsd_audio_dbg(LSD_OK, "kzalloc ok\n");
+	}
 
 	if (codec_drv->compress_type)
 		codec->compress_type = codec_drv->compress_type;
@@ -3298,7 +3311,7 @@ int snd_soc_register_codec(struct device *dev,
 			}
 		}
 	}
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
+	lsd_audio_dbg(LSD_DBG, "here\n");
 
 	if (codec_drv->reg_access_size && codec_drv->reg_access_default) {
 		if (!codec->volatile_register)
@@ -3318,17 +3331,27 @@ int snd_soc_register_codec(struct device *dev,
 	if (num_dai) {
 		ret = snd_soc_register_dais(dev, dai_drv, num_dai);
 		if (ret < 0)
+		{
+			lsd_audio_dbg(LSD_ERR, "snd_soc_register_dais is error\n");
 			goto fail;
+		}	
+		else
+		{
+			lsd_audio_dbg(LSD_OK, "snd_soc_register_dais is ok\n");
+		}
 	}
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-
+	else
+	{
+		lsd_audio_dbg(LSD_ERR, "num_dai == 0\n");
+	}
+	
 	mutex_lock(&client_mutex);
 	list_add(&codec->list, &codec_list);
 	snd_soc_instantiate_cards();
 	mutex_unlock(&client_mutex);
 
 	pr_debug("Registered codec '%s'\n", codec->name);
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
+	lsd_audio_dbg(LSD_OK, "Registered codec '%s'\n", codec->name);
 	return 0;
 
 fail:

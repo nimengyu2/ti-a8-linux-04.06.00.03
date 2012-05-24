@@ -90,6 +90,7 @@ static int __init omap_i2c_nr_ports(void)
 	else if (cpu_is_omap44xx())
 		ports = 4;
 
+	printk("lierda am335x i2c port=%d\n",ports);
 	return ports;
 }
 
@@ -139,7 +140,7 @@ static inline int omap2_i2c_add_bus(int bus_id)
 		"String buffer overflow in I2C%d device setup\n", bus_id);
 	oh = omap_hwmod_lookup(oh_name);
 	if (!oh) {
-			pr_err("Could not look up %s\n", oh_name);
+			pr_err("lierda Could not look up %s\n", oh_name);
 			return -EEXIST;
 	}
 

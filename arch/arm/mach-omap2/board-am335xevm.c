@@ -269,10 +269,20 @@ static struct omap2_hsmmc_info am335x_mmc[] __initdata = {
 
 #ifdef CONFIG_OMAP_MUX
 static struct omap_board_mux board_mux[] __initdata = {
+#if 0
 	AM33XX_MUX(I2C0_SDA, OMAP_MUX_MODE0 | AM33XX_SLEWCTRL_SLOW |
 			AM33XX_INPUT_EN | AM33XX_PIN_OUTPUT),
 	AM33XX_MUX(I2C0_SCL, OMAP_MUX_MODE0 | AM33XX_SLEWCTRL_SLOW |
 			AM33XX_INPUT_EN | AM33XX_PIN_OUTPUT),
+#endif
+#if 1
+	AM33XX_MUX(UART1_CTSN, OMAP_MUX_MODE3 | AM33XX_SLEWCTRL_SLOW |
+			AM33XX_INPUT_EN | AM33XX_PIN_OUTPUT),
+	AM33XX_MUX(UART1_RTSN, OMAP_MUX_MODE3 | AM33XX_SLEWCTRL_SLOW |
+			AM33XX_INPUT_EN | AM33XX_PIN_OUTPUT),
+#endif
+
+	
 	{ .reg_offset = OMAP_MUX_TERMINATOR },
 };
 #else
@@ -572,6 +582,16 @@ static struct pinmux_config i2c1_pin_mux[] = {
 					AM33XX_PULL_ENBL | AM33XX_INPUT_EN},
 	{NULL, 0},
 };
+
+
+static struct pinmux_config i2c2_pin_mux[] = {
+	{"uart1_ctsn.i2c2_sda",    OMAP_MUX_MODE3 | AM33XX_SLEWCTRL_SLOW |
+					AM33XX_PULL_ENBL | AM33XX_INPUT_EN},
+	{"uart1_rtsn.i2c2_scl",   OMAP_MUX_MODE3 | AM33XX_SLEWCTRL_SLOW |
+					AM33XX_PULL_ENBL | AM33XX_INPUT_EN},
+	{NULL, 0},
+};
+
 
 /* Module pin mux for mcasp1 */
 static struct pinmux_config mcasp1_pin_mux[] = {
@@ -899,12 +919,14 @@ static struct pinmux_config mmc2_wl12xx_pin_mux[] = {
 
 // 串口1,这里是wl12xx使用的
 static struct pinmux_config uart1_wl12xx_pin_mux[] = {
-	{"uart1_ctsn.uart1_ctsn", OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
-	{"uart1_rtsn.uart1_rtsn", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT},
+	// nmy modify
+	//{"uart1_ctsn.uart1_ctsn", OMAP_MUX_MODE0 | AM33XX_PIN_OUTPUT},
+	//{"uart1_rtsn.uart1_rtsn", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT},
 	{"uart1_rxd.uart1_rxd", OMAP_MUX_MODE0 | AM33XX_PIN_INPUT_PULLUP},
 	{"uart1_txd.uart1_txd", OMAP_MUX_MODE0 | AM33XX_PULL_ENBL},
 	{NULL, 0},
 };
+
 
 static struct pinmux_config wl12xx_pin_mux_evm_rev1_1a[] = {
 	{"gpmc_a0.gpio1_16", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
@@ -1194,9 +1216,12 @@ static struct lis3lv02d_platform_data lis331dlh_pdata = {
 };
 
 static struct i2c_board_info am335x_i2c_boardinfo1[] = {
+#if 1
 	{
 		I2C_BOARD_INFO("tlv320aic3x", 0x1b),
 	},
+#endif
+#if 0
 	{
 		I2C_BOARD_INFO("lis331dlh", 0x18),
 		.platform_data = &lis331dlh_pdata,
@@ -1207,6 +1232,7 @@ static struct i2c_board_info am335x_i2c_boardinfo1[] = {
 	{
 		I2C_BOARD_INFO("tmp275", 0x48),
 	},
+#endif
 };
 
 static void i2c1_init(int evm_id, int profile)
@@ -1215,6 +1241,15 @@ static void i2c1_init(int evm_id, int profile)
 	omap_register_i2c_bus(2, 100, am335x_i2c_boardinfo1,
 			ARRAY_SIZE(am335x_i2c_boardinfo1));
 	pr_info("lierda:enter in i2c1_init function.\n");
+	return;
+}
+
+static void i2c2_init(int evm_id, int profile)
+{
+	setup_pin_mux(i2c2_pin_mux);
+	omap_register_i2c_bus(3, 100, am335x_i2c_boardinfo1,
+			ARRAY_SIZE(am335x_i2c_boardinfo1));
+	pr_info("lierda:enter in i2c2_init function.\n");
 	return;
 }
 
@@ -1494,6 +1529,7 @@ static struct evm_dev_cfg low_cost_evm_dev_cfg[] = {
 /* General Purpose EVM */
 static struct evm_dev_cfg gen_purp_evm_dev_cfg[] = {
 	//{mmc0_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
+	//{i2c2_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
 	{mmc0_no_cd_init,DEV_ON_BASEBOARD, PROFILE_NONE},
 	{lcdc_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
 	{evm_nand_init, DEV_ON_BASEBOARD, PROFILE_NONE},
@@ -1861,9 +1897,12 @@ static struct tps65910_board am335x_tps65910_info = {
 *	   eeprom probe is called last.
 */
 static struct i2c_board_info __initdata am335x_i2c_boardinfo[] = {
+#if 1
 	{
 		I2C_BOARD_INFO("tlv320aic3x", 0x1b),
 	},
+#endif
+#if 1
 	{
 		/* Daughter Board EEPROM */
 		I2C_BOARD_INFO("24c256", DAUG_BOARD_I2C_ADDR),
@@ -1873,17 +1912,21 @@ static struct i2c_board_info __initdata am335x_i2c_boardinfo[] = {
 		/* Baseboard board EEPROM */
 		I2C_BOARD_INFO("24c256", BASEBOARD_I2C_ADDR),
 		.platform_data  = &am335x_baseboard_eeprom_info,
-	},/*
+	},
+#endif
+/*
 	{
 		I2C_BOARD_INFO("cpld_reg", 0x35),
 	},
 	{
 		I2C_BOARD_INFO("tlc59108", 0x40),
 	},*/
+#if 1
 	{
 		I2C_BOARD_INFO("tps65910", TPS65910_I2C_ID1),
 		.platform_data  = &am335x_tps65910_info,
 	},
+#endif
 	
 
 };
@@ -1932,10 +1975,15 @@ static void __init am335x_evm_i2c_init(void)
 	/* Initially assume Low Cost EVM Config */
 	am335x_evm_id = LOW_COST_EVM;
 
-	evm_init_cpld();
+	// nmy add
+#if 1	
+	//evm_init_cpld();
 
-	omap_register_i2c_bus(1, 100, am335x_i2c_boardinfo,
+	//omap_register_i2c_bus(1, 100, am335x_i2c_boardinfo,
+	//			ARRAY_SIZE(am335x_i2c_boardinfo));
+	omap_register_i2c_bus(3, 100, am335x_i2c_boardinfo,
 				ARRAY_SIZE(am335x_i2c_boardinfo));
+#endif
 }
 
 static struct resource am335x_rtc_resources[] = {

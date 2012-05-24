@@ -31,8 +31,8 @@
  *  Hence the machine layer should disable unsupported inputs/outputs by
  *  snd_soc_dapm_disable_pin(codec, "MONO_LOUT"), etc.
  */
-//#define M_NMY_DEBUG_AUDIO   1
-#undef M_NMY_DEBUG_AUDIO
+#define M_NMY_DEBUG_AUDIO   1
+//#undef M_NMY_DEBUG_AUDIO
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -51,6 +51,8 @@
 #include <sound/initval.h>
 #include <sound/tlv.h>
 #include <sound/tlv320aic3x.h>
+
+#include <linux/lierda_debug.h>
 
 #include "tlv320aic3x.h"
 
@@ -1291,9 +1293,7 @@ static int aic3x_init(struct snd_soc_codec *codec)
 {
 	struct aic3x_priv *aic3x = snd_soc_codec_get_drvdata(codec);
 	int reg;
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
+	lsd_audio_dbg(LSD_DBG,"aic3x init first\n");
 	snd_soc_write(codec, AIC3X_PAGE_SELECT, PAGE0_SELECT);
 	snd_soc_write(codec, AIC3X_RESET, SOFT_RESET);
 
@@ -1364,7 +1364,7 @@ static int aic3x_init(struct snd_soc_codec *codec)
 		aic3x_init_3007(codec);
 		snd_soc_write(codec, CLASSD_CTRL, 0);
 	}
-
+	lsd_audio_dbg(LSD_DBG,"aic3x init last\n");
 	return 0;
 }
 
@@ -1386,9 +1386,7 @@ static int aic3x_probe(struct snd_soc_codec *codec)
 	struct aic3x_priv *aic3x = snd_soc_codec_get_drvdata(codec);
 	int ret, i;
 
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
+	lsd_audio_dbg(LSD_DBG,"aic3x probe init\n");
 	INIT_LIST_HEAD(&aic3x->list);
 	codec->control_data = aic3x->control_data;
 	aic3x->codec = codec;
@@ -1397,22 +1395,26 @@ static int aic3x_probe(struct snd_soc_codec *codec)
 	ret = snd_soc_codec_set_cache_io(codec, 8, 8, aic3x->control_type);
 	if (ret != 0) {
 		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
+		lsd_audio_dbg(LSD_ERR,"Failed to set cache I/O: %d\n", ret);
 		return ret;
 	}
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
+	else
+	{
+		lsd_audio_dbg(LSD_OK,"OK to set cache I/O: %d\n", ret);
+	}
 
 	if (gpio_is_valid(aic3x->gpio_reset) &&
 	    !aic3x_is_shared_reset(aic3x)) {
+		lsd_audio_dbg(LSD_OK,"gpio_is_valid(aic3x->gpio_reset)\n");
 		ret = gpio_request(aic3x->gpio_reset, "tlv320aic3x reset");
 		if (ret != 0)
 			goto err_gpio;
 		gpio_direction_output(aic3x->gpio_reset, 0);
 	}
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
+	else
+	{
+		lsd_audio_dbg(LSD_ERR,"gpio_is_valid(aic3x->gpio_reset)\n");
+	}
 
 	for (i = 0; i < ARRAY_SIZE(aic3x->supplies); i++)
 		aic3x->supplies[i].supply = aic3x_supply_names[i];
@@ -1420,12 +1422,15 @@ static int aic3x_probe(struct snd_soc_codec *codec)
 	ret = regulator_bulk_get(codec->dev, ARRAY_SIZE(aic3x->supplies),
 				 aic3x->supplies);
 	if (ret != 0) {
+		lsd_audio_dbg(LSD_ERR, "Failed to request supplies: %d\n", ret);
 		dev_err(codec->dev, "Failed to request supplies: %d\n", ret);
 		goto err_get;
 	}
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
+	else
+	{
+		lsd_audio_dbg(LSD_OK, "OK to request supplies: %d\n", ret);
+	}
+
 	for (i = 0; i < ARRAY_SIZE(aic3x->supplies); i++) {
 		aic3x->disable_nb[i].nb.notifier_call = aic3x_regulator_event;
 		aic3x->disable_nb[i].aic3x = aic3x;
@@ -1438,9 +1443,7 @@ static int aic3x_probe(struct snd_soc_codec *codec)
 			goto err_notif;
 		}
 	}
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
+	lsd_audio_dbg(LSD_DBG,"here\n");
 
 	codec->cache_only = 1;
 	aic3x_init(codec);
@@ -1461,9 +1464,7 @@ static int aic3x_probe(struct snd_soc_codec *codec)
 	aic3x_add_widgets(codec);
 	list_add(&aic3x->list, &reset_list);
 
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
+	lsd_audio_dbg(LSD_DBG,"aic3x_probe last\n");
 	return 0;
 
 err_notif:
@@ -1476,9 +1477,7 @@ err_get:
 	    !aic3x_is_shared_reset(aic3x))
 		gpio_free(aic3x->gpio_reset);
 err_gpio:
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
+	lsd_audio_dbg(LSD_DBG,"err_gpio");
 	return ret;
 }
 
@@ -1538,18 +1537,18 @@ static int aic3x_i2c_probe(struct i2c_client *i2c,
 	struct aic3x_priv *aic3x;
 	int ret;
 	const struct i2c_device_id *tbl;
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
+	lsd_audio_dbg(LSD_DBG,"aic3x probe first\n");
 
 	aic3x = kzalloc(sizeof(struct aic3x_priv), GFP_KERNEL);
 	if (aic3x == NULL) {
 		dev_err(&i2c->dev, "failed to create private data\n");
+		lsd_audio_dbg(LSD_ERR,"failed to create private data\n");
 		return -ENOMEM;
 	}
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
+	else
+	{
+		lsd_audio_dbg(LSD_OK,"OK to create private data\n");
+	}
 
 	aic3x->control_data = i2c;
 	aic3x->control_type = SND_SOC_I2C;
@@ -1558,38 +1557,31 @@ static int aic3x_i2c_probe(struct i2c_client *i2c,
 	if (pdata) {
 		aic3x->gpio_reset = pdata->gpio_reset;
 		aic3x->setup = pdata->setup;
+		lsd_audio_dbg(LSD_OK,"OK pdata gpio_rest\n");
 	} else {
 		aic3x->gpio_reset = -1;
+		lsd_audio_dbg(LSD_ERR,"ERR pdata gpio_rest\n");
 	}
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
 
 	for (tbl = aic3x_i2c_id; tbl->name[0]; tbl++) {
 		if (!strcmp(tbl->name, id->name))
 			break;
 	}
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
+	lsd_audio_dbg(LSD_DBG,"here\n");
 	aic3x->model = tbl - aic3x_i2c_id;
 
 	ret = snd_soc_register_codec(&i2c->dev,
 			&soc_codec_dev_aic3x, &aic3x_dai, 1);
 	if (ret < 0)
 		kfree(aic3x);
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d,ret=%d\n",__FILE__,__FUNCTION__,__LINE__,ret);
-	#endif	
+	lsd_audio_dbg(LSD_DBG,"aic3x_i2c_probe last\n");
 	
 	return ret;
 }
 
 static int aic3x_i2c_remove(struct i2c_client *client)
 {
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif	
+	lsd_audio_dbg(LSD_DBG,"aic3x remove last\n");	
 	snd_soc_unregister_codec(&client->dev);
 	kfree(i2c_get_clientdata(client));
 	return 0;
@@ -1611,17 +1603,18 @@ static int __init aic3x_modinit(void)
 {
 	int ret = 0;
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
+	lsd_audio_dbg(LSD_DBG,"aic3x modinit first\n");
 	ret = i2c_add_driver(&aic3x_i2c_driver);
 	if (ret != 0) {
 		printk(KERN_ERR "Failed to register TLV320AIC3x I2C driver: %d\n",
 		       ret);
+		lsd_audio_dbg(LSD_ERR,"Failed to register TLV320AIC3x I2C driver:\n");
 	}
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
+	else
+	{
+		lsd_audio_dbg(LSD_OK,"ok to register TLV320AIC3x I2C driver:\n");
+	}
+	lsd_audio_dbg(LSD_DBG,"aic3x modinit last\n");
 #endif
 	return ret;
 }
@@ -1630,9 +1623,7 @@ module_init(aic3x_modinit);
 static void __exit aic3x_exit(void)
 {
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-	#ifdef M_NMY_DEBUG_AUDIO
-	printk("lierda:enter file=%s function=%s line=%d\n",__FILE__,__FUNCTION__,__LINE__);
-	#endif
+	lsd_audio_dbg(LSD_DBG,"aic3x exit\n");
 	i2c_del_driver(&aic3x_i2c_driver);
 #endif
 }

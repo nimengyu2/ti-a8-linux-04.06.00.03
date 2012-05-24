@@ -260,7 +260,8 @@ static struct snd_soc_dai_link am335x_evm_dai = {
 	.stream_name = "AIC3X",
 	.cpu_dai_name = "davinci-mcasp.0",
 	.codec_dai_name = "tlv320aic3x-hifi",
-	.codec_name = "tlv320aic3x-codec.1-001b",
+	// 注意这里的3-001b指i2c3,很容易搞错的
+	.codec_name = "tlv320aic3x-codec.3-001b",
 	.platform_name = "davinci-pcm-audio",
 	.init = evm_aic3x_init,
 	.ops = &evm_ops,
