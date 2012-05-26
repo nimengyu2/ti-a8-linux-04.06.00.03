@@ -24,6 +24,7 @@
 
 #include <asm/hardware/asp.h>
 #include <mach/edma.h>
+#include <linux/lierda_debug.h>
 
 #include "davinci-pcm.h"
 #include "davinci-i2s.h"
@@ -260,8 +261,13 @@ static struct snd_soc_dai_link am335x_evm_dai = {
 	.stream_name = "AIC3X",
 	.cpu_dai_name = "davinci-mcasp.0",
 	.codec_dai_name = "tlv320aic3x-hifi",
+#if (M_I2C_HXZD == 1)
 	// 注意这里的3-001b指i2c3,很容易搞错的
 	.codec_name = "tlv320aic3x-codec.3-001b",
+#endif
+#if (M_I2C_HXZD == 0)
+	.codec_name = "tlv320aic3x-codec.1-001b",
+#endif
 	.platform_name = "davinci-pcm-audio",
 	.init = evm_aic3x_init,
 	.ops = &evm_ops,

@@ -34,6 +34,7 @@
 #include <linux/slab.h>
 #include <video/da8xx-fb.h>
 #include <asm/mach-types.h>
+#include <linux/lierda_debug.h>
 
 #define DRIVER_NAME "da8xx_lcdc"
 
@@ -252,24 +253,24 @@ static struct da8xx_panel known_lcd_panels[] = {
 		.pxl_clk = 7833600,
 		.invert_pxl_clk = 0,
 	},
-#if 0
+#if 1
 // for nanjing yuyue 10 inch screen
 	/* ThreeFive S9700RTWV35TR */
 	[2] = {
 		.name = "TFC_S9700RTWV35TR_01B",
 		.width = 1024,
-		.height = 600,
+		.height = 768,
 		.hfp = 210,
 		.hbp = 6,
 		.hsw = 40,
 		.vfp = 22,
 		.vbp = 3,
 		.vsw = 20,
-		.pxl_clk = 1024*600*60,
+		.pxl_clk = (1024)*(768)*60,
 		.invert_pxl_clk = 0,
 	},
 #endif
-#if 1
+#if 0
 // for lsd 7 inch screen
 	/* ThreeFive S9700RTWV35TR */
 	[2] = {
@@ -1353,6 +1354,7 @@ static int __devinit fb_probe(struct platform_device *device)
 	par->vram_size = lcdc_info->width * lcdc_info->height * lcd_cfg->bpp;
 	par->vram_size = PAGE_ALIGN(par->vram_size/8);
 	par->vram_size = par->vram_size * LCD_NUM_BUFFERS;
+	
 
 	par->vram_virt = dma_alloc_coherent(NULL,
 					    par->vram_size,
@@ -1360,7 +1362,7 @@ static int __devinit fb_probe(struct platform_device *device)
 					    GFP_KERNEL | GFP_DMA);
 	if (!par->vram_virt) {
 		dev_err(&device->dev,
-			"GLCD: kmalloc for frame buffer failed\n");
+			"GLCD: lierda kmalloc for frame buffer failed\n");
 		ret = -EINVAL;
 		goto err_release_fb;
 	}

@@ -633,6 +633,9 @@ static void fbcon_prepare_logo(struct vc_data *vc, struct fb_info *info,
 		kfree(save);
 	}
 
+	// nmy modify
+	//vc->vc_bottom = vc->vc_bottom + 1;
+
 	if (logo_lines > vc->vc_bottom) {
 		logo_shown = FBCON_LOGO_CANSHOW;
 		printk(KERN_INFO

@@ -57,6 +57,8 @@
 #include "devices.h"
 #include "hsmmc.h"
 
+#include <linux/lierda_debug.h>
+
 /* TLK PHY IDs */
 #define TLK110_PHY_ID		0x2000A201
 #define TLK110_PHY_MASK		0xfffffff0
@@ -116,7 +118,7 @@
 #define GPIO_TO_PIN(bank, gpio) (32 * (bank) + (gpio))
 
 // nmy modify
-#if 0
+#if 1
 //原版的32位色液晶支持
 static const struct display_panel disp_panel = {
 	WVGA,
@@ -143,6 +145,7 @@ static struct lcd_ctrl_config lcd_cfg = {
 };
 #endif
 
+#if 0
 // 支持南京鱼跃 10寸液晶和我们的拓普微的液晶
 static const struct display_panel disp_panel = {
 	QVGA,
@@ -167,13 +170,14 @@ static struct lcd_ctrl_config lcd_cfg = {
 	.raster_order		= 0,
 	.fifo_th		= 6,
 };
-
+#endif
 
 struct da8xx_lcdc_platform_data TFC_S9700RTWV35TR_01B_pdata = {
 	.manu_name		= "ThreeFive",
 	.controller_data	= &lcd_cfg,
 	.type			= "TFC_S9700RTWV35TR_01B",
 };
+
 
 /* TSc controller */
 // 4显触摸屏支持
@@ -269,13 +273,13 @@ static struct omap2_hsmmc_info am335x_mmc[] __initdata = {
 
 #ifdef CONFIG_OMAP_MUX
 static struct omap_board_mux board_mux[] __initdata = {
-#if 0
+#if (M_I2C_HXZD == 0)
 	AM33XX_MUX(I2C0_SDA, OMAP_MUX_MODE0 | AM33XX_SLEWCTRL_SLOW |
 			AM33XX_INPUT_EN | AM33XX_PIN_OUTPUT),
 	AM33XX_MUX(I2C0_SCL, OMAP_MUX_MODE0 | AM33XX_SLEWCTRL_SLOW |
 			AM33XX_INPUT_EN | AM33XX_PIN_OUTPUT),
 #endif
-#if 1
+#if (M_I2C_HXZD == 1)
 	AM33XX_MUX(UART1_CTSN, OMAP_MUX_MODE3 | AM33XX_SLEWCTRL_SLOW |
 			AM33XX_INPUT_EN | AM33XX_PIN_OUTPUT),
 	AM33XX_MUX(UART1_RTSN, OMAP_MUX_MODE3 | AM33XX_SLEWCTRL_SLOW |
@@ -603,6 +607,24 @@ static struct pinmux_config mcasp1_pin_mux[] = {
 	{NULL, 0},
 };
 
+
+/* Module pin mux for hxzd_gpio */
+static struct pinmux_config hxzd_gpio_pin_mux[] = {
+	{"gpmc_a0.gpio1_16",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	{"gpmc_a1.gpio1_17",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	{"gpmc_a2.gpio1_18",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	{"gpmc_a3.gpio1_19", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	{"gpmc_a4.gpio1_20", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	{"gpmc_a5.gpio1_21",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	{"gpmc_a6.gpio1_22",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	{"gpmc_a7.gpio1_23",  OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	{"gpmc_a8.gpio1_24", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	{"gpmc_a9.gpio1_25", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	{"gpmc_a10.gpio1_26", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	{"gpmc_a11.gpio1_27", OMAP_MUX_MODE7 | AM33XX_PIN_OUTPUT},
+	{NULL, 0},
+};
+
 // nmy add 
 /* Module pin mux for mcasp0 */
 static struct pinmux_config mcasp0_pin_mux[] = {
@@ -665,14 +687,14 @@ static struct pinmux_config uart2_pin_mux[] = {
 };
 
 static struct pinmux_config uart4_pin_mux[] = {
-	{"mii1_txd3.uart4_rxd", OMAP_MUX_MODE3 | AM33XX_PIN_INPUT_PULLUP},
-	{"mii1_txd2.uart4_txd", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL},
+	{"uart0_ctsn.uart4_rxd", OMAP_MUX_MODE1 | AM33XX_PIN_INPUT_PULLUP},
+	{"uart0_rtsn.uart4_txd", OMAP_MUX_MODE1 | AM33XX_PULL_ENBL},
 	{NULL, 0},
 };
 
 static struct pinmux_config uart5_pin_mux[] = {
-	{"mii1_col.uart5_rxd", OMAP_MUX_MODE3 | AM33XX_PIN_INPUT_PULLUP},
-	{"mii1_rx_dv.uart5_txd",OMAP_MUX_MODE3 | AM33XX_PULL_ENBL},
+	{"mii1_col.uart5_rxd",OMAP_MUX_MODE3 | AM33XX_PIN_INPUT_PULLUP},
+	{"rmii1_refclk.uart5_txd", OMAP_MUX_MODE3 | AM33XX_PULL_ENBL},
 	{NULL, 0},
 };
 
@@ -1030,6 +1052,12 @@ static void rgmii1_init(int evm_id, int profile)
 static void rgmii2_init(int evm_id, int profile)
 {
 	setup_pin_mux(rgmii2_pin_mux);
+	return;
+}
+
+static void hxzd_gpio_init(int evm_id, int profile)
+{
+	setup_pin_mux(hxzd_gpio_pin_mux);
 	return;
 }
 
@@ -1541,6 +1569,8 @@ static struct evm_dev_cfg gen_purp_evm_dev_cfg[] = {
 	{usb1_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
 	{tsc_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
 	{mcasp0_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
+	{hxzd_gpio_init,DEV_ON_BASEBOARD, PROFILE_NONE},
+	
 
 	// 原版初始化配置
 /*
@@ -1902,6 +1932,9 @@ static struct i2c_board_info __initdata am335x_i2c_boardinfo[] = {
 		I2C_BOARD_INFO("tlv320aic3x", 0x1b),
 	},
 #endif
+	{
+		I2C_BOARD_INFO("pcf8563", 0x51),
+	},
 #if 1
 	{
 		/* Daughter Board EEPROM */
@@ -1977,12 +2010,15 @@ static void __init am335x_evm_i2c_init(void)
 
 	// nmy add
 #if 1	
-	//evm_init_cpld();
-
-	//omap_register_i2c_bus(1, 100, am335x_i2c_boardinfo,
-	//			ARRAY_SIZE(am335x_i2c_boardinfo));
+	evm_init_cpld();
+#if (M_I2C_HXZD == 0)
+	omap_register_i2c_bus(1, 100, am335x_i2c_boardinfo,
+				ARRAY_SIZE(am335x_i2c_boardinfo));
+#endif
+#if (M_I2C_HXZD == 1)
 	omap_register_i2c_bus(3, 100, am335x_i2c_boardinfo,
 				ARRAY_SIZE(am335x_i2c_boardinfo));
+#endif
 #endif
 }
 
@@ -2123,7 +2159,7 @@ static void __init am335x_evm_init(void)
 	am33xx_cpuidle_init();
 	am33xx_mux_init(board_mux);
 	omap_serial_init();
-	am335x_rtc_init();
+	//am335x_rtc_init();
 	clkout2_enable();
 	am335x_evm_i2c_init();
 	omap_sdrc_init(NULL, NULL);
