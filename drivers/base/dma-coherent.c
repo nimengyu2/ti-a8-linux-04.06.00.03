@@ -5,6 +5,7 @@
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/dma-mapping.h>
+#include <linux/lierda_debug.h>
 
 struct dma_coherent_mem {
 	void		*virt_base;
@@ -115,20 +116,47 @@ int dma_alloc_from_coherent(struct device *dev, ssize_t size,
 	int pageno;
 
 	if (!dev)
+	{
+		lsd_dbg(LSD_ERR,"dma_alloc_from_coherent no dev\n");
 		return 0;
+	}
+	else
+	{
+		lsd_dbg(LSD_OK,"dma_alloc_from_coherent have dev\n");
+	}
+		
 	mem = dev->dma_mem;
 	if (!mem)
+	{
+		lsd_dbg(LSD_ERR,"dma_alloc_from_coherent no mem\n");
 		return 0;
-
+	}
+	else
+	{
+		lsd_dbg(LSD_OK,"dma_alloc_from_coherent have mem\n");
+	}
 	*ret = NULL;
 
 	if (unlikely(size > (mem->size << PAGE_SHIFT)))
+	{
+		lsd_dbg(LSD_ERR,"dma_alloc_from_coherent size too big\n");
 		goto err;
+	}
+	else
+	{
+		lsd_dbg(LSD_OK,"dma_alloc_from_coherent size is ok\n");
+	}
 
 	pageno = bitmap_find_free_region(mem->bitmap, mem->size, order);
 	if (unlikely(pageno < 0))
+	{
+		lsd_dbg(LSD_ERR,"dma_alloc_from_coherent unlikely(pageno < 0)\n");
 		goto err;
-
+	}
+	else
+	{
+		lsd_dbg(LSD_OK,"dma_alloc_from_coherent unlikely(pageno < 0) is ok\n");
+	}
 	/*
 	 * Memory was found in the per-device area.
 	 */
@@ -136,6 +164,7 @@ int dma_alloc_from_coherent(struct device *dev, ssize_t size,
 	*ret = mem->virt_base + (pageno << PAGE_SHIFT);
 	memset(*ret, 0, size);
 
+	lsd_dbg(LSD_OK,"dma_alloc_from_coherent ok");
 	return 1;
 
 err:

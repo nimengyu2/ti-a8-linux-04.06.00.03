@@ -118,7 +118,7 @@
 #define GPIO_TO_PIN(bank, gpio) (32 * (bank) + (gpio))
 
 // nmy modify
-#if 1
+#if 0
 //原版的32位色液晶支持
 static const struct display_panel disp_panel = {
 	WVGA,
@@ -145,7 +145,7 @@ static struct lcd_ctrl_config lcd_cfg = {
 };
 #endif
 
-#if 0
+#if 1
 // 支持南京鱼跃 10寸液晶和我们的拓普微的液晶
 static const struct display_panel disp_panel = {
 	QVGA,

@@ -24,6 +24,7 @@
 #include <asm/cacheflush.h>
 #include <asm/tlbflush.h>
 #include <asm/sizes.h>
+#include <linux/lierda_debug.h>
 
 #include "mm.h"
 
@@ -64,26 +65,48 @@ static struct page *__dma_alloc_buffer(struct device *dev, size_t size, gfp_t gf
 	struct page *page, *p, *e;
 	void *ptr;
 	u64 mask = get_coherent_dma_mask(dev);
+	lsd_dbg(LSD_DBG,"size0x=%08x,order=0x%08x\n",size,order);
+	lsd_dbg(LSD_DBG,"get_coherent_dma_mask(dev) mask %#llx\n",mask);
 
 #ifdef CONFIG_DMA_API_DEBUG
 	u64 limit = (mask + 1) & ~mask;
 	if (limit && size >= limit) {
 		dev_warn(dev, "coherent allocation too big (requested %#x mask %#llx)\n",
 			size, mask);
+		lsd_dbg(LSD_ERR,"coherent allocation too big (requested %#x mask %#llx)\n",
+			size, mask);
 		return NULL;
+	}
+	else
+	{
+		lsd_dbg(LSD_OK,"coherent allocation no too big (requested %#x mask %#llx)\n",
+			size, mask);
 	}
 #endif
 
 	if (!mask)
+	{
+		lsd_dbg(LSD_ERR,"mask is NULL\n");
 		return NULL;
-
+	}
+	else
+	{
+		lsd_dbg(LSD_OK,"mask is no NULL\n");
+	}
+	
 	if (mask < 0xffffffffULL)
 		gfp |= GFP_DMA;
 
 	page = alloc_pages(gfp, order);
 	if (!page)
+	{
+		lsd_dbg(LSD_ERR,"page is NULL\n");
 		return NULL;
-
+	}
+	else
+	{
+		lsd_dbg(LSD_OK,"page is no NULL\n");
+	}
 	/*
 	 * Now split the huge page and free the excess pages
 	 */
@@ -99,7 +122,7 @@ static struct page *__dma_alloc_buffer(struct device *dev, size_t size, gfp_t gf
 	memset(ptr, 0, size);
 	dmac_flush_range(ptr, ptr + size);
 	outer_flush_range(__pa(ptr), __pa(ptr) + size);
-
+	lsd_dbg(LSD_OK,"__dma_alloc_buffer is ok\n");
 	return page;
 }
 
@@ -315,18 +338,33 @@ __dma_alloc(struct device *dev, size_t size, dma_addr_t *handle, gfp_t gfp,
 
 	page = __dma_alloc_buffer(dev, size, gfp);
 	if (!page)
+	{
+		lsd_dbg(LSD_ERR,"page is NULL\n");
 		return NULL;
+	}
+	else
+	{
+		lsd_dbg(LSD_OK,"page is no NULL\n");
+	}
 
 	if (!arch_is_coherent())
+	{
+		lsd_dbg(LSD_OK,"arch_is_coherent() is no NULL\n");
 		addr = __dma_alloc_remap(page, size, gfp, prot);
+	}	
 	else
+	{
+		lsd_dbg(LSD_ERR,"arch_is_coherent() is NULL\n");
 		addr = page_address(page);
+	}
+		
 
 	if (addr)
 		*handle = pfn_to_dma(dev, page_to_pfn(page));
 	else
 		__dma_free_buffer(page, size);
 
+	lsd_dbg(LSD_OK,"__dma_alloc is ok\n");
 	return addr;
 }
 

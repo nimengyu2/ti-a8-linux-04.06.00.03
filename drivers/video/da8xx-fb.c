@@ -253,20 +253,21 @@ static struct da8xx_panel known_lcd_panels[] = {
 		.pxl_clk = 7833600,
 		.invert_pxl_clk = 0,
 	},
+// nmy add
 #if 1
 // for nanjing yuyue 10 inch screen
 	/* ThreeFive S9700RTWV35TR */
 	[2] = {
 		.name = "TFC_S9700RTWV35TR_01B",
 		.width = 1024,
-		.height = 768,
+		.height = 600,
 		.hfp = 210,
 		.hbp = 6,
 		.hsw = 40,
 		.vfp = 22,
 		.vbp = 3,
 		.vsw = 20,
-		.pxl_clk = (1024)*(768)*60,
+		.pxl_clk = (1024+210+46)*(600+45)*60,
 		.invert_pxl_clk = 0,
 	},
 #endif
@@ -292,8 +293,8 @@ static struct da8xx_panel known_lcd_panels[] = {
 // for ti am335x borad lcd
 	[2] = {
 		.name = "TFC_S9700RTWV35TR_01B",
-		.width = 800,
-		.height = 480,
+		.width = 1024,
+		.height = 600,
 		.hfp = 39,
 		.hbp = 39,
 		.hsw = 47,
@@ -1354,7 +1355,8 @@ static int __devinit fb_probe(struct platform_device *device)
 	par->vram_size = lcdc_info->width * lcdc_info->height * lcd_cfg->bpp;
 	par->vram_size = PAGE_ALIGN(par->vram_size/8);
 	par->vram_size = par->vram_size * LCD_NUM_BUFFERS;
-	
+	printk("par->vram_size=0x%08x\n",par->vram_size);
+	printk("par->vram_phys=0x%08x\n",par->vram_size);	
 
 	par->vram_virt = dma_alloc_coherent(NULL,
 					    par->vram_size,
