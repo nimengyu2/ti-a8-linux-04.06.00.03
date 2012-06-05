@@ -34,6 +34,7 @@
 #include <linux/fb.h>
 
 #include <asm/fb.h>
+#include <linux/lierda_debug.h>
 
 
     /*
@@ -387,6 +388,7 @@ static void fb_rotate_logo(struct fb_info *info, u8 *dst,
 {
 	u32 tmp;
 
+	lsd_fb_dbg(LSD_DBG,"rotate=%d\n",rotate);
 	if (rotate == FB_ROTATE_UD) {
 		fb_rotate_logo_ud(image->data, dst, image->width,
 				  image->height);
@@ -415,24 +417,62 @@ static void fb_rotate_logo(struct fb_info *info, u8 *dst,
 	image->data = dst;
 }
 
+void fb_clear_groud(struct fb_info *info)
+{
+	// nmy modify
+#if 1
+	// È«ÆÁÏÔÊ¾ºÚÉ«
+	struct fb_image image1;
+	unsigned char *logo_big = NULL;
+	image1.dx = 0;
+	image1.dy = 0;
+	image1.depth = 8;
+	image1.width = info->var.xres-image1.dx;
+	image1.height = info->var.yres-image1.dy;
+	logo_big = kmalloc(image1.width *
+				     image1.height, GFP_KERNEL);
+	if(logo_big)
+	{
+		lsd_fb_dbg(LSD_OK,"kmalloc ok\n");
+		image1.data = logo_big;
+		//lsd_fb_dbg(LSD_DBG,"*(image->data)=0x%02x\n",*(image->data));
+		memset(logo_big,0x20,image1.width *
+				     image1.height);
+		info->fbops->fb_imageblit(info, &image1);
+	}
+	else
+	{
+		lsd_fb_dbg(LSD_OK,"kmalloc no ok\n");
+		
+	}
+#endif
+}
+
+
 static void fb_do_show_logo(struct fb_info *info, struct fb_image *image,
 			    int rotate, unsigned int num)
 {
 	unsigned int x;
-
+	
+	lsd_fb_dbg(LSD_DBG,"rotate=%d\n",rotate);
 	if (rotate == FB_ROTATE_UR) {
+		lsd_fb_dbg(LSD_DBG,"rotate==FB_ROTATE_UR\n");
+		#if 1
 		for (x = 0;
 		     x < num && image->dx + image->width <= info->var.xres;
 		     x++) {
 			info->fbops->fb_imageblit(info, image);
 			image->dx += image->width + 8;
 		}
+		#endif
 	} else if (rotate == FB_ROTATE_UD) {
+		lsd_fb_dbg(LSD_DBG,"rotate==FB_ROTATE_UD\n");
 		for (x = 0; x < num && image->dx >= 0; x++) {
 			info->fbops->fb_imageblit(info, image);
 			image->dx -= image->width + 8;
 		}
 	} else if (rotate == FB_ROTATE_CW) {
+		lsd_fb_dbg(LSD_DBG,"rotate==FB_ROTATE_CW\n");
 		for (x = 0;
 		     x < num && image->dy + image->height <= info->var.yres;
 		     x++) {
@@ -440,6 +480,7 @@ static void fb_do_show_logo(struct fb_info *info, struct fb_image *image,
 			image->dy += image->height + 8;
 		}
 	} else if (rotate == FB_ROTATE_CCW) {
+		lsd_fb_dbg(LSD_DBG,"rotate==FB_ROTATE_CCW\n");
 		for (x = 0; x < num && image->dy >= 0; x++) {
 			info->fbops->fb_imageblit(info, image);
 			image->dy -= image->height + 8;
@@ -455,6 +496,13 @@ static int fb_show_logo_line(struct fb_info *info, int rotate,
 	unsigned char *logo_new = NULL, *logo_rotate = NULL;
 	struct fb_image image;
 
+#ifdef CONFIG_FB_LOGO_EXTRA
+	lsd_fb_dbg(LSD_DBG,"defined CONFIG_FB_LOGO_EXTRA\n");
+#endif
+#ifndef CONFIG_FB_LOGO_EXTRA
+	lsd_fb_dbg(LSD_DBG,"no define CONFIG_FB_LOGO_EXTRA\n");
+#endif
+
 	/* Return if the frame buffer is not mapped or suspended */
 	if (logo == NULL || info->state != FBINFO_STATE_RUNNING ||
 	    info->flags & FBINFO_MODULE)
@@ -464,10 +512,13 @@ static int fb_show_logo_line(struct fb_info *info, int rotate,
 	image.data = logo->data;
 
 	if (fb_logo.needs_cmapreset)
+	{
+		lsd_dbg(LSD_DBG,"fb_logo.needs_cmapreset\n");
 		fb_set_logocmap(info, logo);
-
+	}
 	if (fb_logo.needs_truepalette ||
 	    fb_logo.needs_directpalette) {
+		lsd_dbg(LSD_DBG,"fb_logo.needs_truepalette || fb_logo.needs_directpalette\n");
 		palette = kmalloc(256 * 4, GFP_KERNEL);
 		if (palette == NULL)
 			return 0;
@@ -482,6 +533,7 @@ static int fb_show_logo_line(struct fb_info *info, int rotate,
 	}
 
 	if (fb_logo.depth <= 4) {
+		lsd_dbg(LSD_DBG,"fb_logo.depth <= 4\n");
 		logo_new = kmalloc(logo->width * logo->height, GFP_KERNEL);
 		if (logo_new == NULL) {
 			kfree(palette);
@@ -492,6 +544,7 @@ static int fb_show_logo_line(struct fb_info *info, int rotate,
 		image.data = logo_new;
 		fb_set_logo(info, logo, logo_new, fb_logo.depth);
 	}
+	
 
 	image.dx = 0;
 	image.dy = y;
@@ -506,6 +559,7 @@ static int fb_show_logo_line(struct fb_info *info, int rotate,
 	}
 
 	fb_do_show_logo(info, &image, rotate, n);
+	
 
 	kfree(palette);
 	if (saved_pseudo_palette != NULL)
