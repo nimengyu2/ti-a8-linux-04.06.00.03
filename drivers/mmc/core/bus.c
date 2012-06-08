@@ -258,6 +258,8 @@ struct mmc_card *mmc_alloc_card(struct mmc_host *host, struct device_type *type)
 	return card;
 }
 
+
+extern unsigned char g_u8_mmc_sd_present;
 /*
  * Register a new MMC card with the driver model.
  */
@@ -300,6 +302,7 @@ int mmc_add_card(struct mmc_card *card)
 			mmc_card_highspeed(card) ? "high speed " : "",
 			mmc_card_ddr_mode(card) ? "DDR " : "",
 			type);
+
 	} else {
 		printk(KERN_INFO "%s: new %s%s%s card at address %04x\n",
 			mmc_hostname(card->host),
@@ -307,6 +310,8 @@ int mmc_add_card(struct mmc_card *card)
 			(mmc_card_highspeed(card) ? "high speed " : ""),
 			mmc_card_ddr_mode(card) ? "DDR " : "",
 			type, card->rca);
+		// nmy add
+		g_u8_mmc_sd_present = 1;
 	}
 
 #ifdef CONFIG_DEBUG_FS
@@ -339,6 +344,9 @@ void mmc_remove_card(struct mmc_card *card)
 		} else {
 			printk(KERN_INFO "%s: card %04x removed\n",
 				mmc_hostname(card->host), card->rca);
+			// nmy add
+			g_u8_mmc_sd_present = 0;
+
 		}
 		device_del(&card->dev);
 	}

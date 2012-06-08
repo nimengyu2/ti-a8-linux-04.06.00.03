@@ -143,6 +143,7 @@ static struct lcd_ctrl_config lcd_cfg = {
 };
 #endif
 
+#if 1
 // 支持南京鱼跃 10寸液晶和我们的拓普微的液晶
 static const struct display_panel disp_panel = {
 	QVGA,
@@ -167,6 +168,7 @@ static struct lcd_ctrl_config lcd_cfg = {
 	.raster_order		= 0,
 	.fifo_th		= 6,
 };
+#endif
 
 
 struct da8xx_lcdc_platform_data TFC_S9700RTWV35TR_01B_pdata = {
@@ -659,7 +661,7 @@ static struct pinmux_config uart5_pin_mux[] = {
 /* Module pin mux for uart3 */  
 // 串口3
 static struct pinmux_config uart3_pin_mux[] = {
-	{"spi0_cs1.uart3_rxd", AM33XX_PIN_INPUT_PULLUP},
+	//{"spi0_cs1.uart3_rxd", AM33XX_PIN_INPUT_PULLUP},
 	{"ecap0_in_pwm0_out.uart3_txd", AM33XX_PULL_ENBL},
 	{NULL, 0},
 };
@@ -1374,6 +1376,7 @@ static void d_can_init(int evm_id, int profile)
 
 static void mmc0_init(int evm_id, int profile)
 {
+	am335x_mmc[0].gpio_wp = -EINVAL;
 	setup_pin_mux(mmc0_pin_mux);
 
 	omap2_hsmmc_init(am335x_mmc);
@@ -1493,8 +1496,8 @@ static struct evm_dev_cfg low_cost_evm_dev_cfg[] = {
 
 /* General Purpose EVM */
 static struct evm_dev_cfg gen_purp_evm_dev_cfg[] = {
-	//{mmc0_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
-	{mmc0_no_cd_init,DEV_ON_BASEBOARD, PROFILE_NONE},
+	{mmc0_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
+	//{mmc0_no_cd_init,DEV_ON_BASEBOARD, PROFILE_NONE},
 	{lcdc_init,	DEV_ON_BASEBOARD, PROFILE_NONE},
 	{evm_nand_init, DEV_ON_BASEBOARD, PROFILE_NONE},
 	{uart1_wl12xx_init, DEV_ON_BASEBOARD, PROFILE_NONE},
@@ -1890,7 +1893,14 @@ static struct i2c_board_info __initdata am335x_i2c_boardinfo[] = {
 
 static struct omap_musb_board_data musb_board_data = {
 	.interface_type	= MUSB_INTERFACE_ULPI,
-	.mode           = MUSB_OTG,
+	// nmy modify
+	//.mode           = MUSB_OTG,
+	/*
+	 * mode[0:3] = USB0PORT's mode
+	 * mode[4:7] = USB1PORT's mode
+	 * AM335X beta EVM has USB0 in OTG mode and USB1 in host mode.
+	 */
+	.mode           = (MUSB_HOST << 4) | MUSB_OTG,
 	.power		= 500,
 	.instances	= 1,
 };

@@ -81,6 +81,7 @@
  * Size of DMA-consistent memory region.  Must be multiple of 2M,
  * between 2MB and 14MB inclusive.
  */
+
 #ifndef CONSISTENT_DMA_SIZE
 #define CONSISTENT_DMA_SIZE 	SZ_2M
 #endif

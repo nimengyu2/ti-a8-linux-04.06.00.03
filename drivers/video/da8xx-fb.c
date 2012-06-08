@@ -252,13 +252,13 @@ static struct da8xx_panel known_lcd_panels[] = {
 		.pxl_clk = 7833600,
 		.invert_pxl_clk = 0,
 	},
-#if 0
+#if 1
 // for nanjing yuyue 10 inch screen
 	/* ThreeFive S9700RTWV35TR */
 	[2] = {
 		.name = "TFC_S9700RTWV35TR_01B",
-		.width = 1024,
-		.height = 600,
+		.width = 1280,
+		.height = 800,
 		.hfp = 210,
 		.hbp = 6,
 		.hsw = 40,
@@ -269,7 +269,7 @@ static struct da8xx_panel known_lcd_panels[] = {
 		.invert_pxl_clk = 0,
 	},
 #endif
-#if 1
+#if 0
 // for lsd 7 inch screen
 	/* ThreeFive S9700RTWV35TR */
 	[2] = {
