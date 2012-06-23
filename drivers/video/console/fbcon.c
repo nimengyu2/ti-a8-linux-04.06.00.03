@@ -1016,6 +1016,7 @@ static const char *fbcon_startup(void)
 	return display_desc;
 }
 
+extern void fn_show_lcd_reg_data(void);
 static void fbcon_init(struct vc_data *vc, int init)
 {
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
@@ -1154,6 +1155,7 @@ static void fbcon_init(struct vc_data *vc, int init)
 	}
 
 	ops->p = &fb_display[fg_console];
+	fn_show_lcd_reg_data();
 }
 
 static void fbcon_free_font(struct display *p)

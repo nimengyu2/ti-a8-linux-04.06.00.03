@@ -132,6 +132,9 @@
 #define UPPER_MARGIN	32
 #define LOWER_MARGIN	32
 
+
+
+
 static resource_size_t da8xx_fb_reg_base;
 static struct resource *lcdc_regs;
 static unsigned int lcd_revision;
@@ -145,6 +148,61 @@ static inline unsigned int lcdc_read(unsigned int addr)
 static inline void lcdc_write(unsigned int val, unsigned int addr)
 {
 	__raw_writel(val, da8xx_fb_reg_base + (addr));
+}
+
+unsigned int g_u32_lcd_reg[] = {
+	LCD_PID_REG	,		
+	LCD_CTRL_REG	,			
+	LCD_STAT_REG	,			
+	LCD_RASTER_CTRL_REG,			
+	LCD_RASTER_TIMING_0_REG	,	
+	LCD_RASTER_TIMING_1_REG	,	
+	LCD_RASTER_TIMING_2_REG	,	
+	LCD_DMA_CTRL_REG	,		
+	LCD_DMA_FRM_BUF_BASE_ADDR_0_REG	,
+	LCD_DMA_FRM_BUF_CEILING_ADDR_0_REG,
+	LCD_DMA_FRM_BUF_BASE_ADDR_1_REG	,
+	LCD_DMA_FRM_BUF_CEILING_ADDR_1_REG,
+	LCD_RAW_STAT_REG,
+	LCD_MASKED_STAT_REG,
+	LCD_INT_ENABLE_SET_REG,
+	LCD_INT_ENABLE_CLR_REG,
+	LCD_END_OF_INT_IND_REG,
+	LCD_CLK_ENABLE_REG,
+	LCD_CLK_RESET_REG,	
+};
+
+char * g_ps8_lcd_reg[] = {
+	"LCD_PID_REG"	,		
+	"LCD_CTRL_REG"	,			
+	"LCD_STAT_REG"	,			
+	"LCD_RASTER_CTRL_REG",			
+	"LCD_RASTER_TIMING_0_REG"	,	
+	"LCD_RASTER_TIMING_1_REG"	,	
+	"LCD_RASTER_TIMING_2_REG"	,	
+	"LCD_DMA_CTRL_REG"	,		
+	"LCD_DMA_FRM_BUF_BASE_ADDR_0_REG"	,
+	"LCD_DMA_FRM_BUF_CEILING_ADDR_0_REG",
+	"LCD_DMA_FRM_BUF_BASE_ADDR_1_REG"	,
+	"LCD_DMA_FRM_BUF_CEILING_ADDR_1_REG",
+	"LCD_RAW_STAT_REG",
+	"LCD_MASKED_STAT_REG",
+	"LCD_INT_ENABLE_SET_REG",
+	"LCD_INT_ENABLE_CLR_REG",
+	"LCD_END_OF_INT_IND_REG",
+	"LCD_CLK_ENABLE_REG",
+	"LCD_CLK_RESET_REG",
+};
+
+void fn_show_lcd_reg_data(void)
+{
+	int i;
+	int j;
+	j = sizeof(g_u32_lcd_reg)/sizeof(unsigned int);
+	for(i = 0;i < j;i++)
+	{
+		lsd_lcd_dbg(LSD_DBG,"%s=%d,data=0x%08x\n",g_ps8_lcd_reg[i],g_u32_lcd_reg[i],lcdc_read(g_u32_lcd_reg[i]));
+	}
 }
 
 struct da8xx_fb_par {
@@ -255,19 +313,31 @@ static struct da8xx_panel known_lcd_panels[] = {
 	},
 // nmy add
 #if 1
+#define WIDTH 1280
+#define HEIGHT  800
+
+#define HFP   200
+#define HBP   46
+#define HSW   40
+
+#define VFP   40
+#define VBP   3
+#define VSW   20
+
+#define FRESH_HZ  40
 // for nanjing yuyue 10 inch screen
 	/* ThreeFive S9700RTWV35TR */
 	[2] = {
 		.name = "TFC_S9700RTWV35TR_01B",
-		.width = 1024,
-		.height = 600,
-		.hfp = 210,
-		.hbp = 6,
-		.hsw = 40,
-		.vfp = 22,
-		.vbp = 3,
-		.vsw = 20,
-		.pxl_clk = (1024+210+46)*(600+45)*60,
+		.width = WIDTH,
+		.height = HEIGHT,
+		.hfp = HFP,
+		.hbp = HBP,
+		.hsw = HSW,
+		.vfp = VFP,
+		.vbp = VBP,
+		.vsw = VSW,
+		.pxl_clk = (WIDTH+HFP+HBP+HSW)*(HEIGHT+VFP+VBP+VSW)*FRESH_HZ,
 		.invert_pxl_clk = 0,
 	},
 #endif
