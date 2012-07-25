@@ -572,7 +572,7 @@ static void fbcon_prepare_logo(struct vc_data *vc, struct fb_info *info,
 	int cnt, erase = vc->vc_video_erase_char, step;
 	unsigned short *save = NULL, *r, *q;
 	int logo_height;
-	lsd_dbg(LSD_DBG,"at first of fbcon_prepare_logo\n");
+	lsd_fb_dbg(LSD_DBG,"at first of fbcon_prepare_logo\n");
 
 	if (info->flags & FBINFO_MODULE) {
 		logo_shown = FBCON_LOGO_DONTSHOW;
@@ -659,7 +659,7 @@ static void fbcon_prepare_logo(struct vc_data *vc, struct fb_info *info,
 		logo_shown = FBCON_LOGO_DRAW;
 		vc->vc_top = logo_lines;
 	}
-	lsd_dbg(LSD_DBG,"at end of fbcon_prepare_logo\n");
+	lsd_fb_dbg(LSD_DBG,"at end of fbcon_prepare_logo\n");
 }
 #endif /* MODULE */
 
@@ -941,7 +941,7 @@ static const char *fbcon_startup(void)
 	struct fb_info *info = NULL;
 	struct fbcon_ops *ops;
 	int rows, cols;
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	/*
 	 *  If num_registered_fb is zero, this is a call for the dummy part.
 	 *  The frame buffer devices weren't initialized yet.
@@ -1034,7 +1034,7 @@ static const char *fbcon_startup(void)
 
 static void fbcon_init(struct vc_data *vc, int init)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
 	struct fbcon_ops *ops;
 	struct vc_data **default_mode = vc->vc_display_fg;
@@ -1175,7 +1175,7 @@ static void fbcon_init(struct vc_data *vc, int init)
 
 static void fbcon_free_font(struct display *p)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	if (p->userfont && p->fontdata && (--REFCOUNT(p->fontdata) == 0))
 		kfree(p->fontdata - FONT_EXTRA_WORDS * sizeof(int));
 	p->fontdata = NULL;
@@ -1184,7 +1184,7 @@ static void fbcon_free_font(struct display *p)
 
 static void fbcon_deinit(struct vc_data *vc)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct display *p = &fb_display[vc->vc_num];
 	struct fb_info *info;
 	struct fbcon_ops *ops;
@@ -1246,7 +1246,7 @@ finished:
 static void fbcon_clear(struct vc_data *vc, int sy, int sx, int height,
 			int width)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
 	struct fbcon_ops *ops = info->fbcon_par;
 
@@ -1277,7 +1277,7 @@ static void fbcon_clear(struct vc_data *vc, int sy, int sx, int height,
 static void fbcon_putcs(struct vc_data *vc, const unsigned short *s,
 			int count, int ypos, int xpos)
 {	
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
 	struct display *p = &fb_display[vc->vc_num];
 	struct fbcon_ops *ops = info->fbcon_par;
@@ -1298,7 +1298,7 @@ static void fbcon_putc(struct vc_data *vc, int c, int ypos, int xpos)
 
 static void fbcon_clear_margins(struct vc_data *vc, int bottom_only)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
 	struct fbcon_ops *ops = info->fbcon_par;
 
@@ -1346,7 +1346,7 @@ static int scrollback_current = 0;
 static void fbcon_set_disp(struct fb_info *info, struct fb_var_screeninfo *var,
 			   int unit)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct display *p, *t;
 	struct vc_data **default_mode, *vc;
 	struct vc_data *svc;
@@ -1476,7 +1476,7 @@ static __inline__ void ypan_up(struct vc_data *vc, int count)
 
 static __inline__ void ypan_up_redraw(struct vc_data *vc, int t, int count)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
 	struct fbcon_ops *ops = info->fbcon_par;
 	struct display *p = &fb_display[vc->vc_num];
@@ -1501,7 +1501,7 @@ static __inline__ void ypan_up_redraw(struct vc_data *vc, int t, int count)
 
 static __inline__ void ypan_down(struct vc_data *vc, int count)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
 	struct display *p = &fb_display[vc->vc_num];
 	struct fbcon_ops *ops = info->fbcon_par;
@@ -1526,7 +1526,7 @@ static __inline__ void ypan_down(struct vc_data *vc, int count)
 
 static __inline__ void ypan_down_redraw(struct vc_data *vc, int t, int count)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
 	struct fbcon_ops *ops = info->fbcon_par;
 	struct display *p = &fb_display[vc->vc_num];
@@ -1552,7 +1552,7 @@ static __inline__ void ypan_down_redraw(struct vc_data *vc, int t, int count)
 static void fbcon_redraw_softback(struct vc_data *vc, struct display *p,
 				  long delta)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	int count = vc->vc_rows;
 	unsigned short *d, *s;
 	unsigned long n;
@@ -1646,7 +1646,7 @@ static void fbcon_redraw_softback(struct vc_data *vc, struct display *p,
 static void fbcon_redraw_move(struct vc_data *vc, struct display *p,
 			      int line, int count, int dy)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	unsigned short *s = (unsigned short *)
 		(vc->vc_origin + vc->vc_size_row * line);
 
@@ -1681,7 +1681,7 @@ static void fbcon_redraw_move(struct vc_data *vc, struct display *p,
 static void fbcon_redraw_blit(struct vc_data *vc, struct fb_info *info,
 			struct display *p, int line, int count, int ycount)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	int offset = ycount * vc->vc_cols;
 	unsigned short *d = (unsigned short *)
 	    (vc->vc_origin + vc->vc_size_row * line);
@@ -1732,7 +1732,7 @@ static void fbcon_redraw_blit(struct vc_data *vc, struct fb_info *info,
 static void fbcon_redraw(struct vc_data *vc, struct display *p,
 			 int line, int count, int offset)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	unsigned short *d = (unsigned short *)
 	    (vc->vc_origin + vc->vc_size_row * line);
 	unsigned short *s = d + offset;
@@ -1788,7 +1788,7 @@ static void fbcon_redraw(struct vc_data *vc, struct display *p,
 static inline void fbcon_softback_note(struct vc_data *vc, int t,
 				       int count)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	unsigned short *p;
 
 	if (vc->vc_num != fg_console)
@@ -1814,7 +1814,7 @@ static inline void fbcon_softback_note(struct vc_data *vc, int t,
 static int fbcon_scroll(struct vc_data *vc, int t, int b, int dir,
 			int count)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
 	struct display *p = &fb_display[vc->vc_num];
 	int scroll_partial = info->flags & FBINFO_PARTIAL_PAN_OK;
@@ -2019,7 +2019,7 @@ static int fbcon_scroll(struct vc_data *vc, int t, int b, int dir,
 static void fbcon_bmove(struct vc_data *vc, int sy, int sx, int dy, int dx,
 			int height, int width)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
 	struct display *p = &fb_display[vc->vc_num];
 	
@@ -2132,7 +2132,7 @@ static void updatescrollmode(struct display *p,
 static int fbcon_resize(struct vc_data *vc, unsigned int width, 
 			unsigned int height, unsigned int user)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
 	struct fbcon_ops *ops = info->fbcon_par;
 	struct display *p = &fb_display[vc->vc_num];
@@ -2179,7 +2179,7 @@ static int fbcon_resize(struct vc_data *vc, unsigned int width,
 
 static int fbcon_switch(struct vc_data *vc)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_info *info, *old_info = NULL;
 	struct fbcon_ops *ops;
 	struct display *p = &fb_display[vc->vc_num];
@@ -2321,7 +2321,7 @@ static int fbcon_switch(struct vc_data *vc)
 static void fbcon_generic_blank(struct vc_data *vc, struct fb_info *info,
 				int blank)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_event event;
 
 	if (blank) {
@@ -2346,7 +2346,7 @@ static void fbcon_generic_blank(struct vc_data *vc, struct fb_info *info,
 
 static int fbcon_blank(struct vc_data *vc, int blank, int mode_switch)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
 	struct fbcon_ops *ops = info->fbcon_par;
 
@@ -2389,7 +2389,7 @@ static int fbcon_blank(struct vc_data *vc, int blank, int mode_switch)
 
 static int fbcon_debug_enter(struct vc_data *vc)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
 	struct fbcon_ops *ops = info->fbcon_par;
 
@@ -2591,7 +2591,7 @@ static int fbcon_copy_font(struct vc_data *vc, int con)
 
 static int fbcon_set_font(struct vc_data *vc, struct console_font *font, unsigned flags)
 {
-	lsd_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
+	lsd_fb_dbg(LSD_DBG,"at first of function = %s\n",__FUNCTION__);
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
 	unsigned charcount = font->charcount;
 	int w = font->width;

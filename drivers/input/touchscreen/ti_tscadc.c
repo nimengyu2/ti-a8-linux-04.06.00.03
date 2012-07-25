@@ -74,6 +74,7 @@
 #define TSCADC_STEPCONFIG_FIFO1		(1 << 26)
 #define TSCADC_STEPCONFIG_IDLE_INP	(1 << 22)
 #define TSCADC_STEPCONFIG_OPENDLY	0x018
+// nmy change
 #define TSCADC_STEPCONFIG_SAMPLEDLY	0x88
 #define TSCADC_STEPCONFIG_Z1		(3 << 19)
 #define TSCADC_STEPCHARGE_INM_SWAP	BIT(16)
@@ -264,6 +265,7 @@ static irqreturn_t tscadc_interrupt(int irq, void *dev)
 	status = tscadc_readl(ts_dev, TSCADC_REG_IRQSTATUS);
 
 	if (status & TSCADC_IRQENB_FIFO1THRES) {
+		//printk("down\n");
 		fifo0count = tscadc_readl(ts_dev, TSCADC_REG_FIFO0CNT);
 		fifo1count = tscadc_readl(ts_dev, TSCADC_REG_FIFO1CNT);
 		for (i = 0; i < (fifo0count-1); i++) {
@@ -379,8 +381,8 @@ static irqreturn_t tscadc_interrupt(int irq, void *dev)
 					input_report_key(input_dev, BTN_TOUCH,
 							1);
 					input_sync(input_dev);
-					#if 0
-					printk("touch:x=%d,y=%d,p=%d\n",val_x,val_y,z);
+					#if 1
+					printk("x=%d,y=%d,p=%d\n",val_x,val_y,z);
 					#endif
 #endif
 				}
@@ -394,6 +396,7 @@ static irqreturn_t tscadc_interrupt(int irq, void *dev)
 	status = tscadc_readl(ts_dev, TSCADC_REG_RAWIRQSTATUS);
 	if (status & TSCADC_IRQENB_PENUP) {
 		/* Pen up event */
+		//printk("up\n");
 		fsm = tscadc_readl(ts_dev, TSCADC_REG_ADCFSM);
 		if (fsm == 0x10) {
 			pen = 1;
