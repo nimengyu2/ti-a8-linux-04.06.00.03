@@ -379,7 +379,7 @@ static irqreturn_t tscadc_interrupt(int irq, void *dev)
 					input_report_key(input_dev, BTN_TOUCH,
 							1);
 					input_sync(input_dev);
-					#if 1
+					#if 0
 					printk("touch:x=%d,y=%d,p=%d\n",val_x,val_y,z);
 					#endif
 #endif
