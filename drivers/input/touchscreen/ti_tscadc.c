@@ -26,6 +26,7 @@
 #include <linux/io.h>
 #include <linux/input/ti_tscadc.h>
 #include <linux/delay.h>
+#include <linux/jiffies.h>
 
 #define TSCADC_REG_IRQEOI		0x020
 #define TSCADC_REG_RAWIRQSTATUS		0x024
@@ -262,6 +263,9 @@ static irqreturn_t tscadc_interrupt(int irq, void *dev)
 	static unsigned int 		temp_cnt = 0;
 	static unsigned int 		temp_all[10] = {0,0,0};
 	int jj = 0;
+	static unsigned long t_now = 0;
+	static unsigned long t_last = 0;
+	static long t_diff = 0;
 #endif
 
 	status = tscadc_readl(ts_dev, TSCADC_REG_IRQSTATUS);
@@ -380,11 +384,24 @@ static irqreturn_t tscadc_interrupt(int irq, void *dev)
 					//temp_all[1] += temp[temp_cnt][1]; 
 					//temp_all[2] += temp[temp_cnt][2]; 
 					temp_cnt++;
-					if(temp_cnt >= 5)
+#if 1
+					t_now = jiffies;
+					t_diff = (long)t_now - (long)t_last;
+					t_diff = (t_diff*1000)/HZ;					
+					if(t_diff >= 2000)
 					{
-						temp_all[0] = temp[2][0];
-						temp_all[1] = temp[2][1];
-						temp_all[2] = temp[2][2];
+						printk("ts timeout,t_now=0x%08x,t_last=0x%08x,t_diff=%d\n",t_now,
+							t_last,t_diff);						
+						temp_cnt = 0;
+					}	
+					t_last = t_now;		
+#endif		
+
+					if(temp_cnt >= 3)
+					{
+						temp_all[0] = temp[1][0];
+						temp_all[1] = temp[1][1];
+						temp_all[2] = temp[1][2];
 
 						#if 1
 						printk("x=%d,y=%d,p=%d\n",temp_all[0],temp_all[1],temp_all[2]);
