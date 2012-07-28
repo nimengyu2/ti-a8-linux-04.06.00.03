@@ -257,11 +257,13 @@ static irqreturn_t tscadc_interrupt(int irq, void *dev)
 	unsigned int		val_x = 0, val_y = 0, diffx = 0, diffy = 0;
 	unsigned int		z1 = 0, z2 = 0, z = 0;
 // nmy add
-#if 0
-	static unsigned int		temp[3][3];
+#if 1
+	static unsigned int		temp[10][3];
 	static unsigned int 		temp_cnt = 0;
-	static unsigned int 		temp_all[3] = {0,0,0};
+	static unsigned int 		temp_all[10] = {0,0,0};
+	int jj = 0;
 #endif
+
 	status = tscadc_readl(ts_dev, TSCADC_REG_IRQSTATUS);
 
 	if (status & TSCADC_IRQENB_FIFO1THRES) {
@@ -328,27 +330,61 @@ static irqreturn_t tscadc_interrupt(int irq, void *dev)
 			 * Don't report it to user space.
 			 */
 			if (pen == 0) {
-#if 1
+#if 0
 				if ((diffx < 15) && (diffy < 15)
 						&& (z <= MAX_12BIT)) {
 #endif
-#if 0
+#if 1
+				// set diff range is 30,or the touchscreen will very slow 
 				if ((diffx < 30) && (diffy < 30)
 						&& (z <= MAX_12BIT)) {
 					// nmy modify
-					
-					temp[temp_cnt][0] = val_x;
-					temp[temp_cnt][1] = val_y;
-					temp[temp_cnt][2] = z;
-					temp_all[0] += temp[temp_cnt][0]; 	
-					temp_all[1] += temp[temp_cnt][1]; 
-					temp_all[2] += temp[temp_cnt][2]; 
-					temp_cnt++;
-					if(temp_cnt >= 3)
+#if 1
+					if(temp_cnt == 0)
 					{
-						temp_all[0] = temp_all[0]/3;
-						temp_all[1] = temp_all[1]/3;
-						temp_all[2] = temp_all[2]/3;
+						temp[temp_cnt][0] = val_x;
+						temp[temp_cnt][1] = val_y;
+						temp[temp_cnt][2] = z;	
+					}
+					else
+					{
+						for(jj = temp_cnt;jj > 0; jj--)
+						{
+							if(val_x >= temp[jj-1][0])
+							{
+								temp[jj][0] = val_x;
+								temp[jj][1] = val_y;
+								temp[jj][2] = z;
+								break;
+							}
+							else
+							{
+								temp[jj][0] = temp[jj-1][0]; 
+								temp[jj][1] = temp[jj-1][1]; 
+								temp[jj][2] = temp[jj-1][2]; 
+							}
+						}
+						if(jj == 0)
+						{
+							temp[0][0] = val_x;
+							temp[0][1] = val_y;
+							temp[0][2] = z;
+						}
+					}
+#endif
+
+					//temp[temp_cnt][0] = val_x;
+					//temp[temp_cnt][1] = val_y;
+					//temp[temp_cnt][2] = z;	
+					//temp_all[0] += temp[temp_cnt][0]; 	
+					//temp_all[1] += temp[temp_cnt][1]; 
+					//temp_all[2] += temp[temp_cnt][2]; 
+					temp_cnt++;
+					if(temp_cnt >= 5)
+					{
+						temp_all[0] = temp[2][0];
+						temp_all[1] = temp[2][1];
+						temp_all[2] = temp[2][2];
 
 						#if 1
 						printk("x=%d,y=%d,p=%d\n",temp_all[0],temp_all[1],temp_all[2]);
@@ -371,20 +407,23 @@ static irqreturn_t tscadc_interrupt(int irq, void *dev)
 					}
 			
 #endif		
-#if 1
-					input_report_abs(input_dev, ABS_X,
-							val_x);
-					input_report_abs(input_dev, ABS_Y,
-							val_y);
-					input_report_abs(input_dev, ABS_PRESSURE,
-							z);
-					input_report_key(input_dev, BTN_TOUCH,
-							1);
-					input_sync(input_dev);
-					#if 1
-					printk("x=%d,y=%d,p=%d\n",val_x,val_y,z);
-					#endif
-#endif
+					{
+						#if 0
+						input_report_abs(input_dev, ABS_X,
+								val_x);
+						input_report_abs(input_dev, ABS_Y,
+								val_y);
+						input_report_abs(input_dev, ABS_PRESSURE,
+								z);
+						input_report_key(input_dev, BTN_TOUCH,
+								1);
+						input_sync(input_dev);
+						#if 1
+						printk("x=%d,y=%d,p=%d\n",val_x,val_y,z);
+						#endif
+						#endif
+					}		
+
 				}
 			}
 		}
