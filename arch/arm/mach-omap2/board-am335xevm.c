@@ -57,6 +57,8 @@
 #include "devices.h"
 #include "hsmmc.h"
 
+// nmy git add test1
+
 /* TLK PHY IDs */
 #define TLK110_PHY_ID		0x2000A201
 #define TLK110_PHY_MASK		0xfffffff0
